@@ -39,3 +39,9 @@ nix flake update tignear-packages
 
 The mbx version and release hashes are defined in
 [`pkgs/mbx/default.nix`](pkgs/mbx/default.nix).
+
+## Updates
+
+The `Update mbx` workflow checks upstream daily at 21:23 UTC and can also be
+run manually. New stable releases produce a pull request updating the version
+and both Linux archive hashes after validation. Updates are merged manually.

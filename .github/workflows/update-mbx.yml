@@ -1,0 +1,47 @@
+name: Update mbx
+
+on:
+  schedule:
+    - cron: '23 21 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: update-mbx
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Check upstream release and update hashes
+        id: update
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/update-mbx.py
+      - uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24
+        if: steps.update.outputs.changed == 'true'
+      - name: Validate updated package
+        if: steps.update.outputs.changed == 'true'
+        run: |
+          nix flake check --all-systems
+          nix build .#mbx
+          nix run .#mbx -- --version
+      - name: Open or update pull request
+        if: steps.update.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@11e8dc7c9cc95aabee9cfaa85faaec8b50907340
+        with:
+          branch: automation/update-mbx
+          add-paths: pkgs/mbx/default.nix
+          commit-message: 'mbx: update to ${{ steps.update.outputs.version }}'
+          title: 'mbx: update to ${{ steps.update.outputs.version }}'
+          body: |
+            Update mbx to the latest stable upstream release.
+
+            Both Linux musl release archives were downloaded to compute their SHA-256 hashes.
+            Flake evaluation passed for both platforms; build and version checks passed on x86_64-linux.
