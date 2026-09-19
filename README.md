@@ -1,39 +1,41 @@
-# Personal Nix packages
+# nix-packages
 
-tignear の個人用 Nix パッケージ集。各プロジェクトに Nix 設定を追加せずに利用できます。
-Nix の `nix-command` と `flakes` 機能が必要です。
+Shared Nix package definitions for use by other flakes.
 
-## mbx
+## Usage
 
-[mr-boxington](https://github.com/jdx/mr-boxington) 1.14.0 の公式バイナリをパッケージ化しています。
-対応環境: x86_64-linux / aarch64-linux。
+Add this repository as a flake input:
 
-一度だけ実行:
-
-```sh
-nix run github:tignear/nix-packages#mbx -- --help
+```nix
+inputs.tignear-packages.url = "github:tignear/nix-packages";
 ```
 
-任意のプロジェクトで一時的に利用:
+Include `tignear-packages` in the `outputs` arguments, then reference a package
+using the consuming environment's `system`:
 
-```sh
-cd /path/to/project
-nix shell github:tignear/nix-packages#mbx
-mbx --help
+```nix
+mbx = tignear-packages.packages.${system}.mbx;
 ```
 
-ユーザー環境にインストール:
+For example, add it to a development shell:
 
-```sh
-nix profile add github:tignear/nix-packages#mbx
+```nix
+pkgs.mkShell {
+  packages = [ tignear-packages.packages.${system}.mbx ];
+}
 ```
 
-ローカルでビルド・動作確認:
+The consuming flake's `flake.lock` pins the revision. To update it:
 
 ```sh
-nix build .#mbx
-nix run .#mbx -- --version
+nix flake update tignear-packages
 ```
 
-`pkgs/mbx/default.nix` にバージョンとアーキテクチャ別のハッシュを定義し、
-`flake.lock` で nixpkgs を固定しています。
+## Packages
+
+| Package | Source | Platforms |
+| --- | --- | --- |
+| `mbx` | [mr-boxington](https://github.com/jdx/mr-boxington) release binaries | `x86_64-linux`, `aarch64-linux` |
+
+The mbx version and release hashes are defined in
+[`pkgs/mbx/default.nix`](pkgs/mbx/default.nix).

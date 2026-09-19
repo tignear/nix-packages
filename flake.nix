@@ -1,5 +1,5 @@
 {
-  description = "Personal Nix packages maintained by tignear";
+  description = "Shared Nix package definitions for use by other flakes";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
