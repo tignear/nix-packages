@@ -3,18 +3,18 @@ let
   releases = {
     x86_64-linux = {
       arch = "x86_64";
-      hash = "sha256-4EjlrllX/hhQbh2v0Unogf43PJ4cDTrXqUpUFJQgzLs=";
+      hash = "sha256-71K7UPWT90nVE9mMsiLXIAa/rHQ9EaVDG0SU7SuxKPM=";
     };
     aarch64-linux = {
       arch = "aarch64";
-      hash = "sha256-vbFa4MxqEk53ClPsUqwI9toMxXTv5Nx/eHiE6tjaNfU=";
+      hash = "sha256-Pfh5/dbqhUsMBqGes0XnNWF/zaULBYFKHq9OohESBnI=";
     };
   };
 
 in
 pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "mbx";
-  version = "1.14.0";
+  version = "1.18.0";
 
   src = pkgs.fetchurl {
     url = "https://github.com/jdx/mr-boxington/releases/download/v${finalAttrs.version}/mbx-${
